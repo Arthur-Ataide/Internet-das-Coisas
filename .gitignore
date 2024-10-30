@@ -1,0 +1,2 @@
+# Ignorar todos os arquivos com extensão .elf
+*.elf
