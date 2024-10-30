@@ -9,6 +9,9 @@ void main(void) {
     P1OUT = 0x08;
     P1IE = 0x08;
     P1IFG = 0x00; 
+
+    P1OUT |= 0x40;
+
     _BIS_SR(CPUOFF + GIE);
 
     while (1);
@@ -16,12 +19,18 @@ void main(void) {
 
 #pragma vector=PORT1_VECTOR
 __interrupt void Port_1(void) {
-    __delay_cycles(100000); // Gera um atraso
-    P1OUT = P1OUT ^ 0x40; // Inverte saida no pino 1.6 com ou-exclusivo
+    static int cont = 0;
+
+    __delay_cycles(50000); // Gera um atraso
+    if ((P1IN & 0x08) == 0) { 
+
+        cont++;
+
+        if (cont >= 5) {
+            P1OUT |= 0x01;
+            P1OUT &= ~0x40;
+        }
+    }
+
     P1IFG = 0x00;           // Zera flag de interrupção da porta 1 (00000000)
 }
-
-// 1111 1110
-// 0000 0000
-// 0000 1000
-// 1111 1110
